@@ -25,6 +25,16 @@ svg.graphdiagram {
     margin-left: -400px;
 }
 
+.modal.export-cypher {
+    position: absolute;
+    width: 800px;
+    margin-left: -400px;
+}
+
+.modal.help {
+    width: 400px;
+}
+
 .modal.export-markup .modal-body {
     overflow: hidden;
     max-height: 70%;

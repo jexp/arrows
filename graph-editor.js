@@ -225,9 +225,21 @@
         d3.select( ".modal.export-markup" ).classed( "hide", false );
 
         var markup = formatMarkup();
-        d3.select( "textarea.code" )
+        d3.select( ".export-markup .modal-body textarea.code" )
             .attr( "rows", markup.split( "\n" ).length * 2 )
             .node().value = markup;
+    };
+
+    var showHelp = function ()
+    {
+        // appendModalBackdrop();
+        d3.select( ".modal.help" ).classed( "hide", false );
+    };
+
+    var hideHelp = function ()
+    {
+        // cancelModal();
+        d3.select( ".modal.help" ).classed( "hide", true );
     };
 
     function parseMarkup( markup )
@@ -241,7 +253,7 @@
 
     var useMarkupFromMarkupEditor = function ()
     {
-        var markup = d3.select( "textarea.code" ).node().value;
+        var markup = d3.select( ".export-markup .modal-body textarea.code" ).node().value;
         graphModel = parseMarkup( markup );
         save( markup );
         draw();
@@ -263,6 +275,31 @@
         } );
     };
 
+    var openConsoleWithCypher = function (evt)
+    {
+        var cypher = d3.select(".export-cypher .modal-body textarea.code").node().value;
+        cypher = cypher.replace(/\n  /g," ");
+        var url="http://console.neo4j.org"+
+            "?init=" + encodeURIComponent(cypher)+
+            "&query=" + encodeURIComponent("start n=node(*) return n");
+        d3.select( "#open_console" )
+                    .attr( "href", url );
+        return true;
+    };
+
+    d3.select( "#open_console" ).on( "click", openConsoleWithCypher );
+
+    var exportCypher = function ()
+    {
+        appendModalBackdrop();
+        d3.select( ".modal.export-cypher" ).classed( "hide", false );
+
+        var statement = gd.cypher(graphModel);
+        d3.select( ".export-cypher .modal-body textarea.code" )
+            .attr( "rows", statement.split( "\n" ).length )
+            .node().value = statement;
+    };
+
     function changeInternalScale() {
         graphModel.internalScale(d3.select("#internalScale").node().value);
         draw();
@@ -271,8 +308,10 @@
 
     d3.select(window).on("resize", draw);
     d3.select("#internalScale" ).on("change", changeInternalScale);
+    d3.select( "#helpButton" ).on( "mouseover", showHelp).on( "mouseout", hideHelp );
     d3.select( "#exportMarkupButton" ).on( "click", exportMarkup );
     d3.select( "#exportSvgButton" ).on( "click", exportSvg );
+    d3.select( "#exportCypherButton" ).on( "click", exportCypher );
     d3.selectAll( ".modal-dialog" ).on( "click", function ()
     {
         d3.event.stopPropagation();

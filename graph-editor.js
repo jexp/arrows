@@ -44,7 +44,7 @@
     function findClosestOverlappingNode( node )
     {
         var closestNode = null;
-        var closestDistance = Number.MAX_VALUE;
+        var closestDistance = gd.parameters.radius * graphModel.internalScale();
 
         var allNodes = graphModel.nodeList();
 
@@ -54,7 +54,7 @@
             if ( candidateNode !== node )
             {
                 var candidateDistance = node.distanceTo( candidateNode ) * graphModel.internalScale();
-                if ( candidateDistance < 50 && candidateDistance < closestDistance )
+                if ( candidateDistance < closestDistance )
                 {
                     closestNode = candidateNode;
                     closestDistance = candidateDistance;
@@ -71,18 +71,21 @@
         var node = dragTarget[0][0].__data__;
         if ( !newNode && shiftKey )
         {
-            newNode = graphModel.createNode().x( node.x() ).y( node.y() );
+            newNode = graphModel.createNode().x( node.x() + d3.event.dx).y( node.y() + d3.event.dy);
+            newNode.isNew = true;
             newRelationship = graphModel.createRelationship( node, newNode );
         }
         if ( newNode )
         {
             var connectionNode = findClosestOverlappingNode( newNode );
-            if ( connectionNode )
+            if ( connectionNode && connectionNode != node )
             {
-                newRelationship.end = connectionNode
+                newRelationship.end = connectionNode;
+                newNode.isNew = false;
             } else
             {
                 newRelationship.end = newNode;
+                newNode.isNew = true;
             }
             node = newNode;
         }
@@ -92,9 +95,13 @@
 
     function dragEnd()
     {
-        if ( newNode && newRelationship && newRelationship.end !== newNode )
+        if ( newNode )
         {
-            graphModel.deleteNode( newNode );
+            if ( newRelationship && newRelationship.end !== newNode )
+            {
+                graphModel.deleteNode( newNode );
+            }
+            newNode.isNew = false;
         }
         newNode = null;
         save( formatMarkup() );

@@ -28,6 +28,8 @@ gd = {};
             var classes = [];
             var properties = new Properties();
 
+            this.isNew = false;
+
             this.class = function(classesString) {
                 if (arguments.length == 1) {
                     classes = classesString.split(" ").filter(function(className) {
@@ -35,7 +37,7 @@ gd = {};
                     });
                     return this;
                 }
-                return ["node"].concat(classes);
+                return (this.isNew ? ["new","node"]:["node"]).concat(classes);
             };
 
             this.x = function(x) {

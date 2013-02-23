@@ -8,6 +8,10 @@ circle.node {
     fill: white;
 }
 
+circle.node.new {
+    stroke: red;
+}
+
 circle.node.highlight {
     stroke: blue;
 }

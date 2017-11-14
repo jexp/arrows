@@ -365,7 +365,12 @@ window.onload = function()
     var exportSvg = function ()
     {
         var rawSvg = new XMLSerializer().serializeToString(d3.select("#canvas svg" ).node());
-        window.open( "data:image/svg+xml;base64," + btoa( rawSvg ) );
+        var dataString = "data:image/svg+xml;base64," + btoa( rawSvg );
+        var iframe = "<iframe width='100%' height='100%' src='" + dataString + "'></iframe>";
+        var w = window.open();
+        w.document.open();
+        w.document.write(iframe);
+        w.document.close();
     };
 
     var openConsoleWithCypher = function (evt)
